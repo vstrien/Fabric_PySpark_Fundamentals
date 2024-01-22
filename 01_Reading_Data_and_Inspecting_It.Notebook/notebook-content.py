@@ -1,5 +1,21 @@
 # Synapse Analytics notebook source
 
+# METADATA ********************
+
+# META {
+# META   "synapse": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7",
+# META       "default_lakehouse_name": "PySparkLakehouse",
+# META       "default_lakehouse_workspace_id": "e8b3335a-5e83-466c-bd0d-748c45da7cc9",
+# META       "known_lakehouses": [
+# META         {
+# META           "id": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7"
+# META         }
+# META       ]
+# META     }
+# META   }
+# META }
 
 # MARKDOWN ********************
 
@@ -8,27 +24,29 @@
 # MARKDOWN ********************
 
 #  Okay, we have some data and we would like to inspect it, wrangle it, and analyze it.
-#  It of course all starts with getting the data in your pandas dataframe.
+#  It of course all starts with getting the data in your PySpark dataframe.
 
 # MARKDOWN ********************
 
-#  There are many ways to get data into pandas, most have the following syntax:
-# - `pd.read_csv()`
-# - `pd.read_excel()`
-# - `pd.read_parquet()`
-# - `pd.read_sql()`
+#  There are many ways to get data into PySpark, most have the following syntax:
+# - `spark.read.csv()`
+# - `spark.read.json()`
+# - `spark.read.parquet()`
+# - `spark.read.jdbc()`
 # - etc. etc.
 # 
 #  See this link for more options:
-# https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html
+# https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/io.html
 
 # MARKDOWN ********************
 
-#  But first, let's start with importing pandas
+#  But first, let's connect to a Spark session so we can use the pyspark.sql-methods
 
 # CELL ********************
 
-import pandas as pd
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName('example_app').getOrCreate()
 
 # MARKDOWN ********************
 
@@ -40,15 +58,19 @@ import pandas as pd
 
 # MARKDOWN ********************
 
-#  Let's read in some data with `pd.read_csv()`. It's common practice to assign the result to a variable called `df`
+#  Let's read in some data with `spark.read.csv()`. It's common practice to assign the result to a variable called `df`.  
+#  We'll use the shorthand notation to load files from the attached Lakehouse here:
 
 # CELL ********************
 
-df = pd.read_csv('https://github.com/wortell-smart-learning/python-data-fundamentals/raw/main/data/titanic.csv')
+df = spark.read.csv('Files/titanic.csv', inferSchema=True, header=True)
 
 # MARKDOWN ********************
 
 #  What did we just create here? We can use the general python function `type()` to get info what type of object this is:
+
+# MARKDOWN ********************
+
 
 # CELL ********************
 
@@ -57,11 +79,20 @@ type(df)
 # MARKDOWN ********************
 
 #  Let's see what we got when we did this and inspect the first lines with `df.head()`. This is a method that is available on dataframes and series.
-# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html
+# https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.head.html?highlight=head#pyspark.sql.DataFrame.head
 
 # CELL ********************
 
-df.head()
+df.head(3)
+
+# MARKDOWN ********************
+
+# If you want to display it in a nice visual format, you could also use the `toPandas()` method.  
+# Be aware that this will force a computation (and thus can kill your performance)!
+
+# CELL ********************
+
+df.toPandas().head(3)
 
 # MARKDOWN ********************
 
@@ -73,11 +104,14 @@ df.tail(3)
 
 # MARKDOWN ********************
 
-#  What is the shape of this dataframe? We can use the attribute `.shape`
+#  What is the shape of this dataframe? We can use the `.columns` attribute and the `.count()` method to find out the shape:
 
 # CELL ********************
 
-df.shape
+n_columns = len(df.columns)
+n_rows = df.count()
+shape = (n_columns, n_rows)
+print("Shape: ", shape)
 
 # MARKDOWN ********************
 
@@ -97,14 +131,6 @@ type(df.columns)
 
 # MARKDOWN ********************
 
-#  And while we're at it, let's also check the index of this dataframe with the attribute .index
-
-# CELL ********************
-
-df.index
-
-# MARKDOWN ********************
-
 #  DataFrames have many methods and attributes, you can check them with tab completion
 
 # CELL ********************
@@ -113,43 +139,52 @@ df.
 
 # MARKDOWN ********************
 
-#  Let's see what the dataframe looks like in general by using dataframe method `.info()` 
+#  Let's see what the dataframe looks like in general by using dataframe methods:
+#  
+#  * `.printSchema()`
+#  * `.describe()`
+#  * `.count()`
 
 # CELL ********************
 
-df.info()
+df.printSchema()
+
+# CELL ********************
+
+df.describe().toPandas() # Using toPandas() for a nicer view here.
+
+# CELL ********************
+
+df.count()
 
 # MARKDOWN ********************
 
-#  Reading in data with `pd.read_csv()` went very easy (maybe too easy?). Let's check what arguments are available for this function, using `Shift + Tab` inside the function.
+#  Reading in data with `pd.read_csv()` went very easy (maybe too easy?). Let's check what arguments are available for this function, using `Ctrl + Space` inside the function.
 
 # CELL ********************
 
-pd.read_csv()
+pd.read.csv()
 
 # MARKDOWN ********************
 
-#  Can we maybe get a short numerical summary of the data? Yes, we can, with: `df.describe()`
+#  To get quick info about a column of the counts 
+#  
+#  * In Pandas we would do `df['column_name'].value_counts(dropna=False)`
+#  * In `spark.sql` we will do a `groupBy` and `count` instead
+# 
+#  
 
 # CELL ********************
 
-df.describe(include='all')
-
-# MARKDOWN ********************
-
-#  To get quick info about a column of the counts we can do `df['column_name'].value_counts(dropna=False)`
-
-# CELL ********************
-
-df['sex'].value_counts()
+df.groupBy('sex').count().show()
 
 # MARKDOWN ********************
 
 #  New concepts discussed here:
-# - general pandas methods: `pd.read_csv()`
-# - attributes of dataframes, such as: `df.shape`, `df.columns`
-# - and methods of a dataframe: `df.head()`, `df.info()`, `df.describe()`
-# - get counts of values in a column: df['column_name'].value_counts() 
+# - general pandas methods: `pandas.read.csv()`
+# - attributes of dataframes, such as: `df.columns`
+# - and methods of a dataframe: `df.head()`, `df.describe()`
+# - get counts of values in a column: df.groupBy('column_name').count().show()
 
 # CELL ********************
 
