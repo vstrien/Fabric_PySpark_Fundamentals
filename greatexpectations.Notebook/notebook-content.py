@@ -19,7 +19,7 @@ import great_expectations as gx
 
 # MARKDOWN ********************
 
-# ## Overview
+#  Overview
 # 
 # Great Expectations (gx) is a library to help you write asserts about your data.
 # 
@@ -51,7 +51,7 @@ validator.expect_column_values_to_be_between('startYear', 1900, 2021)
 
 # MARKDOWN ********************
 
-# ## More information
+#  More information
 # 
 # * An overview of GX: [GX Overview](https://docs.greatexpectations.io/docs/conceptual_guides/gx_overview)
 # * Types of expectations: [Expectation creation workflow](https://docs.greatexpectations.io/docs/guides/expectations/create_expectations_overview)

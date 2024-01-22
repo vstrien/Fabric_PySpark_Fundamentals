@@ -7,7 +7,7 @@
 
 # MARKDOWN ********************
 
-# ## Let's try to predict (with some hindsight) who will surve the Titanic disaster<br>We need pandas to do the data wrangling and sci-kit learn to do the modeling and predictions
+#  Let's try to predict (with some hindsight) who will surve the Titanic disaster<br>We need pandas to do the data wrangling and sci-kit learn to do the modeling and predictions
 
 # CELL ********************
 
@@ -33,7 +33,7 @@ df.head(2)
 
 # MARKDOWN ********************
 
-# ### Let's pretend we don't know anything. A random model would be predict a 50/50 chance to survive or not. This is the dumbest model we can come up with. Let's create some random predictions:
+#  Let's pretend we don't know anything. A random model would be predict a 50/50 chance to survive or not. This is the dumbest model we can come up with. Let's create some random predictions:
 
 # CELL ********************
 
@@ -41,7 +41,7 @@ random_predictions = np.random.randint(0, 2, 891)
 
 # MARKDOWN ********************
 
-# ### What is our accuracy score when I take this model of random predictions?
+#  What is our accuracy score when I take this model of random predictions?
 
 # CELL ********************
 
@@ -49,7 +49,7 @@ accuracy_score(df['survived'], random_predictions)
 
 # MARKDOWN ********************
 
-# ## But we can do better by looking at what the percentage of survivors is? 
+#  But we can do better by looking at what the percentage of survivors is? 
 
 # CELL ********************
 
@@ -61,7 +61,7 @@ px.bar(
 
 # MARKDOWN ********************
 
-# ## So 60% did not survive and only 40% did survive. So if we would predict noone to survive. We would have 60% correct. That's already a better model!
+#  So 60% did not survive and only 40% did survive. So if we would predict noone to survive. We would have 60% correct. That's already a better model!
 
 # CELL ********************
 
@@ -69,7 +69,7 @@ accuracy_score(df['survived'].values, np.array([0] * 891))
 
 # MARKDOWN ********************
 
-# ## But we can do better of course if look at the data and see what else predicts survival or not<br>Let's see what the effect of passenger class is
+#  But we can do better of course if look at the data and see what else predicts survival or not<br>Let's see what the effect of passenger class is
 
 # CELL ********************
 
@@ -80,7 +80,7 @@ px.bar(group_pclass, 'survived', 'perc_of_group', facet_row='pclass')
 
 # MARKDOWN ********************
 
-# ## And gender could also maybe have an effect on chances of survival
+#  And gender could also maybe have an effect on chances of survival
 
 # CELL ********************
 
@@ -94,15 +94,15 @@ px.bar(group_sex, 'survived', 'perc_of_group', facet_row='sex')
 
 # MARKDOWN ********************
 
-# ## And so on and so on, there could be many variables that have a predictive effect. This is where we need a statistical model to keep of all the effects and come up with good predictions.
+#  And so on and so on, there could be many variables that have a predictive effect. This is where we need a statistical model to keep of all the effects and come up with good predictions.
 
 # MARKDOWN ********************
 
-# ## Let's try to build a first model with the 2 variables that have a clear effect on survival rates: passenger class and sex.
+#  Let's try to build a first model with the 2 variables that have a clear effect on survival rates: passenger class and sex.
 
 # MARKDOWN ********************
 
-# ## But statistical models need numbers and our column sex only contains strings `male` and `female`. So we need a numerical column.
+#  But statistical models need numbers and our column sex only contains strings `male` and `female`. So we need a numerical column.
 
 # CELL ********************
 
@@ -112,7 +112,7 @@ df.head(3)
 
 # MARKDOWN ********************
 
-# ## We need to split what is used as an input to predict and what needs to be predicted: X and y
+#  We need to split what is used as an input to predict and what needs to be predicted: X and y
 
 # CELL ********************
 
@@ -122,7 +122,7 @@ y = df['survived']
 
 # MARKDOWN ********************
 
-# ## Now we can build our first model
+#  Now we can build our first model
 
 # CELL ********************
 
@@ -132,7 +132,7 @@ logit_model.fit(X, y)
 
 # MARKDOWN ********************
 
-# ## And now we have almost 79% correct predictions when we check the accuracy :)
+#  And now we have almost 79% correct predictions when we check the accuracy :)
 
 # CELL ********************
 

@@ -7,7 +7,7 @@
 
 # MARKDOWN ********************
 
-# ## Let's try to predict (with some hindsight) who will surve the Titanic disaster<br>We need pandas to do the data wrangling and sci-kit learn to do the modeling and predictions
+#  Let's try to predict (with some hindsight) who will surve the Titanic disaster<br>We need pandas to do the data wrangling and sci-kit learn to do the modeling and predictions
 
 # CELL ********************
 
@@ -33,35 +33,35 @@ df.head(2)
 
 # MARKDOWN ********************
 
-# ### Let's pretend we don't know anything. A random model would be predict a 50/50 chance to survive or not. This is the dumbest model we can come up with. Let's create some random predictions:
+#  Let's pretend we don't know anything. A random model would be predict a 50/50 chance to survive or not. This is the dumbest model we can come up with. Let's create some random predictions:
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ### What is our accuracy score when I take this model of random predictions?
+#  What is our accuracy score when I take this model of random predictions?
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ## But we can do better by looking at what the percentage of survivors is? 
+#  But we can do better by looking at what the percentage of survivors is? 
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ## So 60% did not survive and only 40% did survive. So if we would predict noone to survive. We would have 60% correct. That's already a better model! Let's check the accuracy score.
+#  So 60% did not survive and only 40% did survive. So if we would predict noone to survive. We would have 60% correct. That's already a better model! Let's check the accuracy score.
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ## But we can do better of course if look at the data and see what else predicts survival or not<br>Let's see what the effect of passenger class is
+#  But we can do better of course if look at the data and see what else predicts survival or not<br>Let's see what the effect of passenger class is
 
 # CELL ********************
 
@@ -73,7 +73,7 @@ group_pclass['perc_of_group'] = group_pclass['alive'] / group_pclass.groupby('pc
 
 # MARKDOWN ********************
 
-# ## And gender could also maybe have an effect on chances of survival
+#  And gender could also maybe have an effect on chances of survival
 
 # CELL ********************
 
@@ -85,15 +85,15 @@ group_sex['perc_of_group'] = group_sex['alive'] / group_sex.groupby(['sex'])['al
 
 # MARKDOWN ********************
 
-# ## And so on and so on, there could be many variables that have a predictive effect. This is where we need a statistical model to keep of all the effects and come up with good predictions.
+#  And so on and so on, there could be many variables that have a predictive effect. This is where we need a statistical model to keep of all the effects and come up with good predictions.
 
 # MARKDOWN ********************
 
-# ## Let's try to build a first model with the 2 variables that have a clear effect on survival rates: passenger class and sex.
+#  Let's try to build a first model with the 2 variables that have a clear effect on survival rates: passenger class and sex.
 
 # MARKDOWN ********************
 
-# ## But statistical models need numbers and our column sex only contains strings `male` and `female`. So we need a numerical column.
+#  But statistical models need numbers and our column sex only contains strings `male` and `female`. So we need a numerical column.
 
 # CELL ********************
 
@@ -103,21 +103,21 @@ df.head(3)
 
 # MARKDOWN ********************
 
-# ## We need to split what is used as an input to predict and what needs to be predicted: X and y
+#  We need to split what is used as an input to predict and what needs to be predicted: X and y
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ## Now we can build our first logistic regression model
+#  Now we can build our first logistic regression model
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ## And now we have almost 79% correct predictions when we check the accuracy :)
+#  And now we have almost 79% correct predictions when we check the accuracy :)
 
 # CELL ********************
 

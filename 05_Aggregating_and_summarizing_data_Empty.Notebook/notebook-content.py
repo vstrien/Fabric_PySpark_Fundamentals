@@ -20,62 +20,62 @@ df.head(3)
 
 # MARKDOWN ********************
 
-# ### You can do a simple count of values with `.value_counts()`, but this only works on a Series (so just 1 column). Please notice the argument  `dropna=False`. Let's try it on end year.
+#  You can do a simple count of values with `.value_counts()`, but this only works on a Series (so just 1 column). Please notice the argument  `dropna=False`. Let's try it on end year.
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ### If you want percentages in your `.value_counts()` you can use argument `normalize=True` 
+#  If you want percentages in your `.value_counts()` you can use argument `normalize=True` 
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ### But one of the most powerful features of pandas is the method `.groupby()`
-# ### This makes it possible to divide your data in groups and summarize it however you like.
-# ### With built-in functions such as .mean(), but you also create your own custom functions
+#  But one of the most powerful features of pandas is the method `.groupby()`
+#  This makes it possible to divide your data in groups and summarize it however you like.
+#  With built-in functions such as .mean(), but you also create your own custom functions
 
 # MARKDOWN ********************
 
-# ### Let's first group data by title type
+#  Let's first group data by title type
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ### Okay, we grouped the data, we don't see anything. We still need to specify what to do with the groups. Let's calculate a `.mean()`.
+#  Okay, we grouped the data, we don't see anything. We still need to specify what to do with the groups. Let's calculate a `.mean()`.
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ### Or just a `.count()` of the columns:
+#  Or just a `.count()` of the columns:
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ### But we see a count of all the columns, I just want the `.count()` of 1 column:
+#  But we see a count of all the columns, I just want the `.count()` of 1 column:
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ### Or a count of your groups over multiple columns
+#  Or a count of your groups over multiple columns
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-# ### Or check the mean rating per start year (for movies) and use pandas plotting
+#  Or check the mean rating per start year (for movies) and use pandas plotting
 
 # CELL ********************
 
@@ -83,7 +83,7 @@ df.query('titleType == "movie"').groupby('startYear')[['averageRating']].mean().
 
 # MARKDOWN ********************
 
-# ### But some years have much more movies than others. How does that effect the mean rating per start year. <br> Below is an example of method chaining: applying all sorts of functions after eachother.
+#  But some years have much more movies than others. How does that effect the mean rating per start year. <br> Below is an example of method chaining: applying all sorts of functions after eachother.
 
 # CELL ********************
 
@@ -96,7 +96,7 @@ df_group_startyear.head(3)
 
 # MARKDOWN ********************
 
-# ### And let's plot the result with plotly express
+#  And let's plot the result with plotly express
 
 # CELL ********************
 
@@ -113,7 +113,7 @@ px.scatter(
 
 # MARKDOWN ********************
 
-# ### There's a whole of functions you can apply to groups. These are just examples:
+#  There's a whole of functions you can apply to groups. These are just examples:
 # - count()
 # - mean()
 # - min()
@@ -127,7 +127,7 @@ px.scatter(
 
 # MARKDOWN ********************
 
-# ### Last thing: let's say you want to apply a custom aggregation to your groups. How do we do that?
+#  Last thing: let's say you want to apply a custom aggregation to your groups. How do we do that?
 
 # CELL ********************
 
@@ -138,7 +138,7 @@ df.groupby('startYear')['averageRating'].apply(custom_mean_calulation)
 
 # MARKDOWN ********************
 
-# ### Oh, let's say you want to group averages, but add those group averages to every row of your dataframe:
+#  Oh, let's say you want to group averages, but add those group averages to every row of your dataframe:
 
 # CELL ********************
 

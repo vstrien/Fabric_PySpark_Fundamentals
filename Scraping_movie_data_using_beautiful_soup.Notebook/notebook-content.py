@@ -3,9 +3,9 @@
 
 # MARKDOWN ********************
 
-# ## Movie scraping script: enrich my basic movie data with some extra info by scraping IMDB
-# ## Extra movie info such as country, language, budget etc.
-# ## The scraping is done with beautiful soup
+#  Movie scraping script: enrich my basic movie data with some extra info by scraping IMDB
+#  Extra movie info such as country, language, budget etc.
+#  The scraping is done with beautiful soup
 
 # CELL ********************
 
@@ -27,7 +27,7 @@ df = pd.read_csv('most_voted_titles.csv')
 
 # MARKDOWN ********************
 
-# ### Function to get and parse html page
+#  Function to get and parse html page
 
 # CELL ********************
 
@@ -42,7 +42,7 @@ def get_soup_of_html_page(url):
 
 # MARKDOWN ********************
 
-# ### Small functions to save (and load) intermediate scraping results
+#  Small functions to save (and load) intermediate scraping results
 
 # CELL ********************
 
@@ -56,7 +56,7 @@ def load_obj(name):
 
 # MARKDOWN ********************
 
-# ### Function to pick out interesting info from a movie page, such as country, language, budget etc.
+#  Function to pick out interesting info from a movie page, such as country, language, budget etc.
 
 # CELL ********************
 
@@ -163,7 +163,7 @@ def get_title_details(title_id):
 
 # MARKDOWN ********************
 
-# ## Start scraping and save every 100 movies scraped to a dictionary
+#  Start scraping and save every 100 movies scraped to a dictionary
 
 # CELL ********************
 
@@ -182,7 +182,7 @@ save_obj(result_dict, f'imdb_{str(number).zfill(7)}_scrape.pkl')
 
 # MARKDOWN ********************
 
-# ## Put all intermediate results together again in 1 dataframe
+#  Put all intermediate results together again in 1 dataframe
 
 # CELL ********************
 
@@ -204,7 +204,7 @@ df.shape
 
 # MARKDOWN ********************
 
-# ## Merge the original dataframe with the extra info we scraped
+#  Merge the original dataframe with the extra info we scraped
 
 # CELL ********************
 
@@ -220,7 +220,7 @@ df_merged['budget'].value_counts(dropna=False)
 
 # MARKDOWN ********************
 
-# ## Write the results to a new datafile
+#  Write the results to a new datafile
 
 # CELL ********************
 
