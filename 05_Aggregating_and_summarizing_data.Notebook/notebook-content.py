@@ -1,5 +1,16 @@
 # Synapse Analytics notebook source
 
+# METADATA ********************
+
+# META {
+# META   "synapse": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7",
+# META       "default_lakehouse_name": "",
+# META       "default_lakehouse_workspace_id": ""
+# META     }
+# META   }
+# META }
 
 # MARKDOWN ********************
 

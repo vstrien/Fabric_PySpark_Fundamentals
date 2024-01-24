@@ -87,12 +87,23 @@ df.limit(3)
 
 # MARKDOWN ********************
 
-# If you want to display it in a nice visual format, you could also use the `toPandas()` method.  
+# If you want to display it in a nice visual format, you could also use the `pandas_api()` method.  
 # Be aware that this will force a computation (and thus can kill your performance)!
 
 # CELL ********************
 
-df.limit(3).toPandas()
+# MAGIC %%timeit
+# MAGIC df.limit(3).pandas_api()
+
+# CELL ********************
+
+
+# CELL ********************
+
+
+# CELL ********************
+
+df.limit(3).pandas_api()
 
 # MARKDOWN ********************
 
@@ -156,7 +167,7 @@ df.printSchema()
 
 # CELL ********************
 
-df.describe().toPandas() # Using toPandas() for a nicer view here.
+df.describe().pandas_api() # Using pandas_api() for a nicer view here.
 
 # CELL ********************
 

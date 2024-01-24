@@ -1,5 +1,21 @@
 # Synapse Analytics notebook source
 
+# METADATA ********************
+
+# META {
+# META   "synapse": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7",
+# META       "default_lakehouse_name": "PySparkLakehouse",
+# META       "default_lakehouse_workspace_id": "e8b3335a-5e83-466c-bd0d-748c45da7cc9",
+# META       "known_lakehouses": [
+# META         {
+# META           "id": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7"
+# META         }
+# META       ]
+# META     }
+# META   }
+# META }
 
 # MARKDOWN ********************
 
@@ -19,12 +35,14 @@
 
 # CELL ********************
 
+from pyspark.sql import SparkSession
 import pandas as pd
 pd.options.display.max_columns = 50
 
-df = pd.read_csv('https://github.com/wortell-smart-learning/python-data-fundamentals/raw/main/data/most_voted_titles_enriched.csv')
+spark = SparkSession.builder.appName('03_Making_selections').getOrCreate()
+df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
 
-df.head(3)
+df.limit(3).pandas_api()
 
 # MARKDOWN ********************
 
@@ -36,15 +54,19 @@ df.head(3)
 
 # CELL ********************
 
-df['startYear']
+df.select('startYear').pandas_api()
 
 # MARKDOWN ********************
 
-#  Specifying only 1 column gives you a Series
+# You can also just select the column. But you can't really look into it - it's only a reference:
 
 # CELL ********************
 
-type(df['startYear'])
+print(type(df['startYear']))
+
+# CELL ********************
+
+df['startYear'].show()
 
 # MARKDOWN ********************
 
@@ -57,16 +79,17 @@ df.startYear
 # MARKDOWN ********************
 
 #  So selecting multiple columns can be done by using a list
+#  (This is new syntax - not every colleague may be aware of this)
 
 # CELL ********************
 
 columns_needed = ['tconst', 'averageRating', 'startYear']
 
-df[columns_needed]
+df[columns_needed].pandas_api()
 
 # MARKDOWN ********************
 
-#  Let's say you only want titles with an average rating greater than 9.0. We need to use boolean vectors:
+#  Let's say you only want titles with an average rating greater than 9.0. We can use expressions like this:
 
 # CELL ********************
 
@@ -74,7 +97,7 @@ df['averageRating'] > 9.0
 
 # CELL ********************
 
-df[df['averageRating'] > 9.0].head(3)
+df[df['averageRating'] > 9.0].limit(3).pandas_api()
 
 # MARKDOWN ********************
 
@@ -90,15 +113,15 @@ df[df['averageRating'] > 9.0].head(3)
 
 # CELL ********************
 
-df[(df['titleType'] == 'movie') & (df['averageRating'] > 9.0)].head(2)
+df[(df['titleType'] == 'movie') & (df['averageRating'] > 9.0)].limit(2).pandas_api()
 
 # MARKDOWN ********************
 
-#  But this gets tedious, so I myself prefer to use the dataframe method `.query()`
+#  But this gets tedious, so I myself prefer to use the dataframe method `.filter()`
 
 # CELL ********************
 
-df.query("titleType == 'movie' and averageRating > 9").head(2)
+df.filter("titleType == 'movie' and averageRating > 9").limit(2).pandas_api()
 
 # MARKDOWN ********************
 
@@ -106,15 +129,25 @@ df.query("titleType == 'movie' and averageRating > 9").head(2)
 
 # CELL ********************
 
-df[df['genre1'].isin(['Crime', 'Drama'])].head(2)
+df[df['genre1'].isin(['Crime', 'Drama'])].limit(2).pandas_api()
 
 # MARKDOWN ********************
 
-#  Ok, ok, just one more thing: if you want to find a string in a text, you can use `.str.contains('your_text', case=False)`
+# If you want to find a string in a text, you can use `.contains('your_text')`
 
 # CELL ********************
 
-df[df['originalTitle'].str.contains('godfather', case=False)]
+df[df['originalTitle'].contains('Godfather')].pandas_api()
+
+# MARKDOWN ********************
+
+# If you want to do it case-insensitive, use the `lower` function, which can operate on a column.
+
+# CELL ********************
+
+from pyspark.sql.functions import lower
+
+df[lower(df['originalTitle']).contains('godfather')].pandas_api()
 
 # CELL ********************
 
