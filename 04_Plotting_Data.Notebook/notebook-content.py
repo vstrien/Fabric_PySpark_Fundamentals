@@ -29,7 +29,7 @@
 
 # CELL ********************
 
-import pandas as pd
+from pyspark.sql import SparkSession
 import seaborn as sns
 
 import plotly.express as px
@@ -38,18 +38,39 @@ import plotly.express as px
 import plotly.io as pio
 pio.templates.default = 'plotly_white'
 
-df = pd.read_csv('https://github.com/wortell-smart-learning/python-data-fundamentals/raw/main/data/most_voted_titles_enriched.csv')
+spark = SparkSession.builder.appName('04_Plotting_Data').getOrCreate()
+df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
 
-df.head(3)
+df.limit(3).pandas_api()
 
 # MARKDOWN ********************
 
-#  Let's see how you make a scatter plot in seaborn and plot runtime vs the average rating.
-#  The syntax is usually like this:
-#  - specify the dataframe you want to use
-#  - specify your x-variable
-#  - specify your y-variable
-#  - and if you would like to color certain points, then specify the hue
+# There is a small issue with this dataset:
+
+# CELL ********************
+
+df[['titleType']].distinct().show()
+
+# MARKDOWN ********************
+
+# Let's filter out the non 'tvSeries' and 'movie' rows:
+
+# CELL ********************
+
+df = df.filter(df['titleType'].isin(['tvSeries', 'movie']))
+
+# MARKDOWN ********************
+
+# Let's see how you make a scatter plot in seaborn and plot runtime vs the average rating.
+# 
+# The syntax is usually like this:
+# 
+# * specify the dataframe you want to use
+# * specify your x-variable
+# * specify your y-variable
+# * and if you would like to color certain points, then specify the hue
+# 
+# In order to use `seaborn`, we need a *real* Pandas DataFrame. So instead of using the Pandas API of PySpark (which suffices for table visualizations inside Spark Notebooks), we'll use the `toPandas()` method now to create a real DataFrame:
 
 # MARKDOWN ********************
 
@@ -58,12 +79,12 @@ df.head(3)
 # CELL ********************
 
 sns.scatterplot(
-    data=df, 
+    data=df.toPandas(), 
     x='runtimeMinutes', 
     y='averageRating', 
     hue='titleType', 
     s=3.
-);
+)
 
 # MARKDOWN ********************
 
@@ -73,7 +94,7 @@ sns.scatterplot(
 
 px.scatter(
     title='runtime vs average rating',
-    data_frame=df.query('runtimeMinutes < 400'), 
+    data_frame=df.filter('runtimeMinutes < 400').toPandas(), 
     x='runtimeMinutes', 
     y='averageRating', 
     color='titleType',
@@ -91,7 +112,7 @@ px.scatter(
 
 px.histogram(
     title='Histogram of average rating vs titletype',
-    data_frame=df,
+    data_frame=df.toPandas(),
     x='averageRating',
     color='titleType',
     histnorm='probability density',
@@ -106,19 +127,11 @@ px.histogram(
 
 px.box(
     title='Comparing average rating by titleType',
-    data_frame=df,
+    data_frame=df.toPandas(),
     x='titleType',
     y='averageRating',
     width=700,
 )
-
-# MARKDOWN ********************
-
-#  Sometimes you don't even need to specify the x and y value. This is the case when there's only an index and 1 column
-
-# CELL ********************
-
-px.bar(df['country'].value_counts().head(5), width=700)
 
 # CELL ********************
 

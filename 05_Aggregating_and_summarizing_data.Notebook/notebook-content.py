@@ -6,8 +6,13 @@
 # META   "synapse": {
 # META     "lakehouse": {
 # META       "default_lakehouse": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7",
-# META       "default_lakehouse_name": "",
-# META       "default_lakehouse_workspace_id": ""
+# META       "default_lakehouse_name": "PySparkLakehouse",
+# META       "default_lakehouse_workspace_id": "e8b3335a-5e83-466c-bd0d-748c45da7cc9",
+# META       "known_lakehouses": [
+# META         {
+# META           "id": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7"
+# META         }
+# META       ]
 # META     }
 # META   }
 # META }
@@ -18,36 +23,52 @@
 
 # CELL ********************
 
+from pyspark.sql import SparkSession
 import pandas as pd
 import plotly.express as px
 
-pd.__version__
+spark = SparkSession.builder.appName('04_Plotting_Data').getOrCreate()
+
 
 # CELL ********************
 
-df = pd.read_csv('https://github.com/wortell-smart-learning/python-data-fundamentals/raw/main/data/most_voted_titles_enriched.csv')
+df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
+df = df.filter(df['titleType'].isin(['tvSeries', 'movie']))
 
-df.head(3)
+df.limit(3).pandas_api()
 
 # MARKDOWN ********************
 
-#  You can do a simple count of values with `.value_counts()`, but this only works on a Series (so just 1 column). Please notice the argument  `dropna=False`
+# You can do a simple count of values:
 
 # CELL ********************
 
-df['endYear'].value_counts(dropna=False).head(5)
+df.groupBy('endYear').count().limit(5).show()
 
 # MARKDOWN ********************
 
-#  If you want percentages you can use argument `normalize=True` 
+#  If you want percentages you need to calculate the entire count first:
 
 # CELL ********************
 
-df['endYear'].value_counts(dropna=False, normalize=True).head(5)
+from pyspark.sql.functions import col, sum as _sum, round
+
+# Calculate counts
+df_count = df.groupBy('endYear').count()
+
+# Calculate total count
+total_count = df_count.select(_sum('count')).first()[0]
+
+# # Normalize counts
+df_normalized = df_count.withColumn('normalized_count', round(df_count['count'] / total_count, 4))
+
+# df_normalized.limit(5).show()
+
+df_normalized.sort('normalized_count', ascending=False).limit(5).show()
 
 # MARKDOWN ********************
 
-#  But one of the most powerful features of pandas is the method `.groupby()`
+#  But one of the most powerful features of pySpark is the method `.groupby()`
 #  This makes it possible to divide your data in groups and summarize it however you like.
 #  With built-in functions such as .mean(), but you also create your own custom functions
 
@@ -57,7 +78,7 @@ df['endYear'].value_counts(dropna=False, normalize=True).head(5)
 
 # CELL ********************
 
-df.groupby(by='titleType', dropna=False)
+df.groupby('titleType')
 
 # MARKDOWN ********************
 
@@ -65,7 +86,7 @@ df.groupby(by='titleType', dropna=False)
 
 # CELL ********************
 
-df.groupby(by='titleType', dropna=False).mean()
+df.groupby('titleType').mean().pandas_api()
 
 # MARKDOWN ********************
 
@@ -73,23 +94,7 @@ df.groupby(by='titleType', dropna=False).mean()
 
 # CELL ********************
 
-df.groupby(by='titleType', dropna=False).count()
-
-# MARKDOWN ********************
-
-#  But we see a count of all the columns, I just want the `.count()` of 1 column:
-
-# CELL ********************
-
-df.groupby(by='titleType', dropna=False)[['genres']].count()
-
-# MARKDOWN ********************
-
-#  Or a count of your groups over multiple columns
-
-# CELL ********************
-
-df.groupby(by='titleType', dropna=False)[['startYear', 'endYear', 'genres']].count()
+df.groupby('titleType').count().show()
 
 # MARKDOWN ********************
 
@@ -97,7 +102,15 @@ df.groupby(by='titleType', dropna=False)[['startYear', 'endYear', 'genres']].cou
 
 # CELL ********************
 
-df.query('titleType == "movie"').groupby('startYear')[['averageRating']].mean().plot()
+(df
+    .filter('titleType == "movie"')
+    .groupby('startYear')
+    .mean('averageRating')
+    .sort('startYear')
+    .toPandas() # Watch out, converting to pandas here!
+    .set_index('startYear')
+    .plot()
+)
 
 # MARKDOWN ********************
 
@@ -105,12 +118,14 @@ df.query('titleType == "movie"').groupby('startYear')[['averageRating']].mean().
 
 # CELL ********************
 
+from pyspark.sql import functions as sf
+
 df_group_startyear = (df
-    .query('titleType == "movie"')
-    .groupby('startYear', as_index=False)
-    .agg(mean=('averageRating', 'mean'), count=('averageRating', 'count'))
+    .filter('titleType == "movie"')
+    .groupby('startYear')
+    .agg(sf.mean('averageRating').alias('mean (avgRating)'), sf.count('averageRating').alias('count (avgRating)'))
 )
-df_group_startyear.head(3)
+df_group_startyear.limit(3).show()
 
 # MARKDOWN ********************
 
@@ -120,10 +135,10 @@ df_group_startyear.head(3)
 
 px.scatter(
     title='Average rating per start year', 
-    data_frame=df_group_startyear, 
+    data_frame=df_group_startyear.toPandas(), 
     x='startYear', 
-    y='mean', 
-    size='count', 
+    y='mean (avgRating)', 
+    size='count (avgRating)', 
     size_max=25,
     height=400,
     width=700,
@@ -131,20 +146,20 @@ px.scatter(
 
 # MARKDOWN ********************
 
-#  There's a whole of functions you can apply to groups. These are just examples:
+# There's a whole of functions you can apply to groups. These are just examples:
 # - count()
 # - mean()
 # - min()
 # - max()
-# - rolling()
-# - cumsum()
-# - diff()
-# - ffill()
 # 
-# See more info here:<br>https://pandas.pydata.org/pandas-docs/stable/reference/groupby.html
+# 
+# See more info here:  
+# 
+# https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.GroupedData.html#pyspark.sql.GroupedData
 
 # MARKDOWN ********************
 
+# TODO: Shall we use `apply`?
 #  Last thing: let's say you want to apply a custom aggregation to your groups. How do we do that?
 
 # CELL ********************
@@ -152,7 +167,7 @@ px.scatter(
 def custom_mean_calulation(x):
     return x.mean() * 10
 
-df.groupby('startYear')['averageRating'].apply(custom_mean_calulation)
+df.groupby('startYear').apply(custom_mean_calulation)
 
 # MARKDOWN ********************
 
@@ -161,7 +176,7 @@ df.groupby('startYear')['averageRating'].apply(custom_mean_calulation)
 # CELL ********************
 
 df['group_mean_rating'] = df.groupby('startYear')['averageRating'].transform('mean')
-df[['tconst', 'startYear', 'averageRating', 'group_mean_rating']].query('startYear > 1960').head(5)
+df[['tconst', 'startYear', 'averageRating', 'group_mean_rating']].query('startYear > 1960').limit(5)
 
 # CELL ********************
 

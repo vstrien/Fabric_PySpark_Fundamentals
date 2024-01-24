@@ -124,7 +124,7 @@ df.filter(df.tconst == "tt0010323").limit(3).pandas_api()
 
 # MARKDOWN ********************
 
-#  Sorting your dataframe is also important. This can be done with `.sort_values()` Don't forget to inspect additional arguments of this function using `Shift + Tab` inside the function.
+#  Sorting your dataframe is also important. This can be done with `.sort()` Don't forget to inspect additional arguments of this function using `Shift + Tab` inside the function.
 
 # MARKDOWN ********************
 
