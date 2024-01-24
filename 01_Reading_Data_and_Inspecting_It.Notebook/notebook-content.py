@@ -46,7 +46,7 @@
 
 from pyspark.sql import SparkSession
 
-spark = SparkSession.builder.appName('example_app').getOrCreate()
+spark = SparkSession.builder.appName('01_reading_data_and_inspecting_it').getOrCreate()
 
 # MARKDOWN ********************
 
@@ -78,12 +78,12 @@ type(df)
 
 # MARKDOWN ********************
 
-#  Let's see what we got when we did this and inspect the first lines with `df.head()`. This is a method that is available on dataframes and series.
-# https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.head.html?highlight=head#pyspark.sql.DataFrame.head
+#  Let's see what we got when we did this and inspect the first lines with `df.limit()`. 
+# https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.limit.html
 
 # CELL ********************
 
-df.head(3)
+df.limit(3)
 
 # MARKDOWN ********************
 
@@ -92,11 +92,16 @@ df.head(3)
 
 # CELL ********************
 
-df.toPandas().head(3)
+df.limit(3).toPandas()
 
 # MARKDOWN ********************
 
-#  Or check the last lines with `df.tail()`
+# We could also use `df.tail()` for the last N rows, but this isn't as handy as the `limit` functionality:
+# 
+# * `df.tail()` returns a List of Rows (not a new DataFrame)
+# * `df.tail()` requires moving data into the driver process that coördinates the (distributed) Spark jobs, which can (in case of large numbers of rows) crash the driver process
+# 
+# Still, you can use it if you really want to:
 
 # CELL ********************
 

@@ -1,5 +1,21 @@
 # Synapse Analytics notebook source
 
+# METADATA ********************
+
+# META {
+# META   "synapse": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7",
+# META       "default_lakehouse_name": "PySparkLakehouse",
+# META       "default_lakehouse_workspace_id": "e8b3335a-5e83-466c-bd0d-748c45da7cc9",
+# META       "known_lakehouses": [
+# META         {
+# META           "id": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7"
+# META         }
+# META       ]
+# META     }
+# META   }
+# META }
 
 # MARKDOWN ********************
 
@@ -11,19 +27,21 @@
 
 # CELL ********************
 
+from pyspark.sql import SparkSession
 import pandas as pd
+spark = SparkSession.builder.appName('02_basic_manipulations').getOrCreate()
 
 # CELL ********************
 
-df = pd.read_csv('https://github.com/wortell-smart-learning/python-data-fundamentals/raw/main/data/most_voted_titles_enriched.csv')
+df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, limiter=True)
 
 # CELL ********************
 
-df.head(3)
+df.limit(3).toPandas()
 
 # MARKDOWN ********************
 
-#  Notice that we don't see all columns when doing `df.head()` that's annoying.<br>Let's first check some of the standard settings and then change them:
+# Notice that we don't see all columns when doing `df.limit().toPandas()`. This is a `pandas` setting, so let's first check some of the standard settings and then change them:
 
 # CELL ********************
 
@@ -39,11 +57,19 @@ pd.options.display.max_columns = 50
 
 # MARKDOWN ********************
 
+# And let's retry displaying the top 3 as a Pandas dataframe:
+
+# CELL ********************
+
+df.limit(3)
+
+# MARKDOWN ********************
+
 #  Let's say we don't like primary Title column, let's delete it
 
 # CELL ********************
 
-df.drop(columns=['primaryTitle']).head(3)
+df.drop('primaryTitle').limit(3).toPandas()
 
 # MARKDOWN ********************
 
@@ -51,8 +77,8 @@ df.drop(columns=['primaryTitle']).head(3)
 
 # CELL ********************
 
-df['new_metascore'] = df['metascore'] / 10.
-df.head(3)
+df = df.withColumn('new_metascore', df['metascore'] / 10)
+df.where(df.metascore > 10).limit(3).toPandas()
 
 # MARKDOWN ********************
 
@@ -60,7 +86,7 @@ df.head(3)
 
 # CELL ********************
 
-df.rename(columns={'startYear': 'start_year'}).head(3)
+df.withColumnRenamed('startYear', 'start_year').limit(3).toPandas()
 
 # MARKDOWN ********************
 
@@ -68,7 +94,7 @@ df.rename(columns={'startYear': 'start_year'}).head(3)
 
 # CELL ********************
 
-df.head(3)
+df.limit(3).toPandas()
 
 # MARKDOWN ********************
 
@@ -76,8 +102,8 @@ df.head(3)
 
 # CELL ********************
 
-df = df.rename(columns={'startYear': 'start_year'})
-df.head(3)
+df = df.withColumnRenamed('startYear', 'start_year')
+df.limit(3).toPandas()
 
 # MARKDOWN ********************
 
@@ -85,7 +111,16 @@ df.head(3)
 
 # CELL ********************
 
-df['endYear'] = df['endYear'].fillna(-1)
+df.filter(df.endYear.isNull()).limit(3).toPandas()
+
+# MARKDOWN ********************
+
+# So `tt0010323` has an endYear that has a null-value (NaN) right now. With the `fillna` method we can fill those specific values, but not the others:
+
+# CELL ********************
+
+df = df.fillna({'endYear': -1})
+df.filter(df.tconst == "tt0010323").limit(3).toPandas()
 
 # MARKDOWN ********************
 
@@ -97,15 +132,15 @@ df['endYear'] = df['endYear'].fillna(-1)
 
 # CELL ********************
 
-df.sort_values(by='originalTitle')
+df.sort('originalTitle').toPandas()
 
 # MARKDOWN ********************
 
-#  2. Now sort the whole list on title in descending order, using `ascending=False`
+#  2. Now sort the whole list on title in descending order.
 
 # CELL ********************
 
-df.sort_values(by='originalTitle', ascending=False)
+df.sort('originalTitle', ascending=False).toPandas()
 
 # MARKDOWN ********************
 
@@ -113,4 +148,7 @@ df.sort_values(by='originalTitle', ascending=False)
 
 # CELL ********************
 
-df.sort_values(by=['startYear', 'runtimeMinutes'], ascending=[False, True])
+df.sort(['startYear', 'runtimeMinutes'], ascending=[False, True]).toPandas()
+
+# CELL ********************
+
