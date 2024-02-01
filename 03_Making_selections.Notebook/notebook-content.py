@@ -36,13 +36,13 @@
 # CELL ********************
 
 from pyspark.sql import SparkSession
-import pandas as pd
-pd.options.display.max_columns = 50
 
 spark = SparkSession.builder.appName('03_Making_selections').getOrCreate()
 df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
 
-df.limit(3).pandas_api()
+display(
+    df.limit(3)
+)
 
 # MARKDOWN ********************
 
@@ -54,7 +54,9 @@ df.limit(3).pandas_api()
 
 # CELL ********************
 
-df.select('startYear').pandas_api()
+display(
+  df.select('startYear')
+)
 
 # MARKDOWN ********************
 
@@ -70,7 +72,7 @@ df['startYear'].show()
 
 # MARKDOWN ********************
 
-#  2. The column names are also attributes, so you also use the dot notation
+# The column names are also attributes, so you also use the dot notation
 
 # CELL ********************
 
@@ -85,7 +87,9 @@ df.startYear
 
 columns_needed = ['tconst', 'averageRating', 'startYear']
 
-df[columns_needed].pandas_api()
+display(
+  df[columns_needed]
+)
 
 # MARKDOWN ********************
 
@@ -97,7 +101,9 @@ df['averageRating'] > 9.0
 
 # CELL ********************
 
-df[df['averageRating'] > 9.0].limit(3).pandas_api()
+display(
+  df[df['averageRating'] > 9.0].limit(3)
+)
 
 # MARKDOWN ********************
 
@@ -113,7 +119,9 @@ df[df['averageRating'] > 9.0].limit(3).pandas_api()
 
 # CELL ********************
 
-df[(df['titleType'] == 'movie') & (df['averageRating'] > 9.0)].limit(2).pandas_api()
+display(
+  df[(df['titleType'] == 'movie') & (df['averageRating'] > 9.0)].limit(2)
+)
 
 # MARKDOWN ********************
 
@@ -121,7 +129,9 @@ df[(df['titleType'] == 'movie') & (df['averageRating'] > 9.0)].limit(2).pandas_a
 
 # CELL ********************
 
-df.filter("titleType == 'movie' and averageRating > 9").limit(2).pandas_api()
+display(
+  df.filter("titleType == 'movie' and averageRating > 9").limit(2)
+)
 
 # MARKDOWN ********************
 
@@ -129,7 +139,9 @@ df.filter("titleType == 'movie' and averageRating > 9").limit(2).pandas_api()
 
 # CELL ********************
 
-df[df['genre1'].isin(['Crime', 'Drama'])].limit(2).pandas_api()
+display(
+  df[df['genre1'].isin(['Crime', 'Drama'])].limit(2)
+)
 
 # MARKDOWN ********************
 
@@ -137,7 +149,9 @@ df[df['genre1'].isin(['Crime', 'Drama'])].limit(2).pandas_api()
 
 # CELL ********************
 
-df[df['originalTitle'].contains('Godfather')].pandas_api()
+display(
+  df[df['originalTitle'].contains('Godfather')]
+)
 
 # MARKDOWN ********************
 
@@ -147,7 +161,6 @@ df[df['originalTitle'].contains('Godfather')].pandas_api()
 
 from pyspark.sql.functions import lower
 
-df[lower(df['originalTitle']).contains('godfather')].pandas_api()
-
-# CELL ********************
-
+display(
+  df[lower(df['originalTitle']).contains('godfather')]
+)

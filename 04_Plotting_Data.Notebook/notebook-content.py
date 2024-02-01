@@ -41,19 +41,26 @@ pio.templates.default = 'plotly_white'
 spark = SparkSession.builder.appName('04_Plotting_Data').getOrCreate()
 df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
 
-df.limit(3).pandas_api()
+display(
+    df.limit(3)
+)
 
 # MARKDOWN ********************
 
-# There is a small issue with this dataset:
+# There is a small issue with this dataset - besides the expected title types 'tvShow' and 'movie' there are some more:
 
 # CELL ********************
 
-df[['titleType']].distinct().show()
+display(df[['titleType']].distinct())
 
 # MARKDOWN ********************
 
-# Let's filter out the non 'tvSeries' and 'movie' rows:
+# If you like, you could fix this:
+# 
+# 1. find out if the CSV file is coherent in designating columns and quotes
+# 2. if it is, ensure the correct settings of `read.csv`
+# 
+# But for now, let's just ignore these seven wrong rows (note that the movies are still in there, it's just that the row has been cut off). Let's filter out the non 'tvSeries' and 'movie' rows:
 
 # CELL ********************
 
@@ -72,8 +79,17 @@ df = df.filter(df['titleType'].isin(['tvSeries', 'movie']))
 # 
 # In order to use `seaborn`, we need a *real* Pandas DataFrame. So instead of using the Pandas API of PySpark (which suffices for table visualizations inside Spark Notebooks), we'll use the `toPandas()` method now to create a real DataFrame:
 
+# CELL ********************
+
+print(f"""
+    Original df: {type(df)} --> this is the SparkSQL API from Spark. Highly efficiënt, distributed, and geared towards Spark
+    Pandas API df: {type(df.pandas_api())} --> this it the pandas API from Spark. It tries to bring all Pandas methods with Spark performance
+    toPandas df: {type(df.toPandas())} --> this is a "real" pandas Dataframe. Forces a computation, all data will be collected and processed
+    """)
+
 # MARKDOWN ********************
 
+# As you can see, we're still in 
 #  Here's the seaborn way of doing things:
 
 # CELL ********************
@@ -94,6 +110,7 @@ sns.scatterplot(
 
 px.scatter(
     title='runtime vs average rating',
+    # Notice we will filter on the Spark API, and defer the transition to Pandas as late as possible:
     data_frame=df.filter('runtimeMinutes < 400').toPandas(), 
     x='runtimeMinutes', 
     y='averageRating', 

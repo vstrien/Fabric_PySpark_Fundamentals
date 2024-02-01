@@ -50,14 +50,6 @@ spark = SparkSession.builder.appName('01_reading_data_and_inspecting_it').getOrC
 
 # MARKDOWN ********************
 
-#  We check which files are available in the directory with a magic command `%ls`:
-
-# CELL ********************
-
-%ls
-
-# MARKDOWN ********************
-
 #  Let's read in some data with `spark.read.csv()`. It's common practice to assign the result to a variable called `df`.  
 #  We'll use the shorthand notation to load files from the attached Lakehouse here:
 
@@ -87,23 +79,19 @@ df.limit(3)
 
 # MARKDOWN ********************
 
-# If you want to display it in a nice visual format, you could also use the `pandas_api()` method.  
-# Be aware that this will force a computation (and thus can kill your performance)!
+# The native method for displaying dataframes is using `.show()`:
 
 # CELL ********************
 
-# MAGIC %%timeit
-# MAGIC df.limit(3).pandas_api()
+df.limit(3).show()
+
+# MARKDOWN ********************
+
+# However, if you want to display it in a nice visual format, use the `display()` method. 
 
 # CELL ********************
 
-
-# CELL ********************
-
-
-# CELL ********************
-
-df.limit(3).pandas_api()
+display(df.limit(3))
 
 # MARKDOWN ********************
 
@@ -167,7 +155,7 @@ df.printSchema()
 
 # CELL ********************
 
-df.describe().pandas_api() # Using pandas_api() for a nicer view here.
+display(df.describe())
 
 # CELL ********************
 
@@ -175,11 +163,15 @@ df.count()
 
 # MARKDOWN ********************
 
-#  Reading in data with `pd.read_csv()` went very easy (maybe too easy?). Let's check what arguments are available for this function, using `Ctrl + Space` inside the function.
+# Reading in data with `spark.read.csv()` went very easy (maybe too easy?). Let's check what arguments are available for this function, using `Ctrl + Space` inside the function.
+# 
+# Arguments are marked with the `=` sign:
+# 
+# ![auto-complete highlighting the results ending with `=`](https://dev.azure.com/FabricDemosWSL/06f181c8-a76a-4c18-a25c-2f79d5cdef95/_apis/git/repositories/f0f83762-e9ea-4026-a0bd-b099f7f74ef8/items?path=/01_Reading_Data_and_Inspecting_It.Notebook/highlight-arguments.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=main&resolveLfs=true&%24format=octetStream&api-version=5.0)
 
 # CELL ********************
 
-pd.read.csv()
+spark.read.csv()
 
 # MARKDOWN ********************
 
@@ -201,6 +193,3 @@ df.groupBy('sex').count().show()
 # - attributes of dataframes, such as: `df.columns`
 # - and methods of a dataframe: `df.head()`, `df.describe()`
 # - get counts of values in a column: df.groupBy('column_name').count().show()
-
-# CELL ********************
-

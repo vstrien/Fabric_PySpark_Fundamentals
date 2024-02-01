@@ -28,7 +28,7 @@
 # CELL ********************
 
 from pyspark.sql import SparkSession
-import pandas as pd
+
 spark = SparkSession.builder.appName('02_basic_manipulations').getOrCreate()
 
 # CELL ********************
@@ -37,31 +37,7 @@ df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, he
 
 # CELL ********************
 
-df.limit(3).pandas_api()
-
-# MARKDOWN ********************
-
-# Notice that we don't see all columns when doing `df.limit().pandas_api()`. This is a `pandas` setting, so let's first check some of the standard settings and then change them:
-
-# CELL ********************
-
-pd.options.display.max_columns
-
-# MARKDOWN ********************
-
-#  This means only 20 columns will be shown, but our dataframe has 26 columns. Let's change this setting:
-
-# CELL ********************
-
-pd.options.display.max_columns = 50
-
-# MARKDOWN ********************
-
-# And let's retry displaying the top 3 as a Pandas dataframe:
-
-# CELL ********************
-
-df.limit(3)
+display(df.limit(3))
 
 # MARKDOWN ********************
 
@@ -69,7 +45,7 @@ df.limit(3)
 
 # CELL ********************
 
-df.drop('primaryTitle').limit(3).pandas_api()
+display(df.drop('primaryTitle').limit(3))
 
 # MARKDOWN ********************
 
@@ -78,7 +54,7 @@ df.drop('primaryTitle').limit(3).pandas_api()
 # CELL ********************
 
 df = df.withColumn('new_metascore', df['metascore'] / 10)
-df.where(df.metascore > 10).limit(3).pandas_api()
+display(df.where(df.metascore > 10).limit(3))
 
 # MARKDOWN ********************
 
@@ -86,7 +62,7 @@ df.where(df.metascore > 10).limit(3).pandas_api()
 
 # CELL ********************
 
-df.withColumnRenamed('startYear', 'start_year').limit(3).pandas_api()
+display(df.withColumnRenamed('startYear', 'start_year').limit(3))
 
 # MARKDOWN ********************
 
@@ -94,7 +70,7 @@ df.withColumnRenamed('startYear', 'start_year').limit(3).pandas_api()
 
 # CELL ********************
 
-df.limit(3).pandas_api()
+display(df.limit(3))
 
 # MARKDOWN ********************
 
@@ -103,7 +79,7 @@ df.limit(3).pandas_api()
 # CELL ********************
 
 df = df.withColumnRenamed('startYear', 'start_year')
-df.limit(3).pandas_api()
+display(df.limit(3))
 
 # MARKDOWN ********************
 
@@ -111,7 +87,7 @@ df.limit(3).pandas_api()
 
 # CELL ********************
 
-df.filter(df.endYear.isNull()).limit(3).pandas_api()
+display(df.filter(df.endYear.isNull()).limit(3))
 
 # MARKDOWN ********************
 
@@ -120,7 +96,7 @@ df.filter(df.endYear.isNull()).limit(3).pandas_api()
 # CELL ********************
 
 df = df.fillna({'endYear': -1})
-df.filter(df.tconst == "tt0010323").limit(3).pandas_api()
+display(df.filter(df.tconst == "tt0010323").limit(3))
 
 # MARKDOWN ********************
 
@@ -132,7 +108,7 @@ df.filter(df.tconst == "tt0010323").limit(3).pandas_api()
 
 # CELL ********************
 
-df.sort('originalTitle').pandas_api()
+display(df.sort('originalTitle'))
 
 # MARKDOWN ********************
 
@@ -140,7 +116,7 @@ df.sort('originalTitle').pandas_api()
 
 # CELL ********************
 
-df.sort('originalTitle', ascending=False).pandas_api()
+display(df.sort('originalTitle', ascending=False))
 
 # MARKDOWN ********************
 
@@ -148,7 +124,4 @@ df.sort('originalTitle', ascending=False).pandas_api()
 
 # CELL ********************
 
-df.sort(['startYear', 'runtimeMinutes'], ascending=[False, True]).pandas_api()
-
-# CELL ********************
-
+display(df.sort(['startYear', 'runtimeMinutes'], ascending=[False, True]))

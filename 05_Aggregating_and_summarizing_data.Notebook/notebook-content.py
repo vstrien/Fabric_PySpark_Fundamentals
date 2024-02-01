@@ -35,7 +35,9 @@ spark = SparkSession.builder.appName('04_Plotting_Data').getOrCreate()
 df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
 df = df.filter(df['titleType'].isin(['tvSeries', 'movie']))
 
-df.limit(3).pandas_api()
+display(
+  df.limit(3)
+)
 
 # MARKDOWN ********************
 
@@ -86,7 +88,9 @@ df.groupby('titleType')
 
 # CELL ********************
 
-df.groupby('titleType').mean().pandas_api()
+display(
+  df.groupby('titleType').mean()
+)
 
 # MARKDOWN ********************
 
@@ -159,24 +163,95 @@ px.scatter(
 
 # MARKDOWN ********************
 
-# TODO: Shall we use `apply`?
-#  Last thing: let's say you want to apply a custom aggregation to your groups. How do we do that?
+# Last thing: let's say you want to apply a custom aggregation to your groups. How do we do that?
+# 
+# In PySpark, you can achieve custom aggregation using the agg() function along with udf (User Defined Function). Here's how you can do it:
+# 
+# First, you need to define your custom function and convert it into a udf.
 
 # CELL ********************
 
-def custom_mean_calulation(x):
-    return x.mean() * 10
+from pyspark.sql.functions import udf
+from pyspark.sql.types import DoubleType # The return type of the function will be a double (floating point number)
 
-df.groupby('startYear').apply(custom_mean_calulation)
+def custom_mean_calculation(x):
+    return (sum(x) / len(x)) * 10
+
+custom_mean_calculation_udf = udf(custom_mean_calculation, DoubleType())
 
 # MARKDOWN ********************
 
-#  Oh, let's say you want to group averages, but add those group averages to every row of your dataframe:
+# Then, you can use this udf in your aggregation:
 
 # CELL ********************
 
-df['group_mean_rating'] = df.groupby('startYear')['averageRating'].transform('mean')
-df[['tconst', 'startYear', 'averageRating', 'group_mean_rating']].query('startYear > 1960').limit(5)
+from pyspark.sql import functions as F
+
+display(
+    df
+    .groupBy('startYear')
+    .agg(
+        custom_mean_calculation_udf(F.collect_list('averageRating'))
+        .alias('groupMeanRating')
+    )
+)
+
+# MARKDOWN ********************
+
+# Oh, let's say you want to group averages, but add those group averages to every row of your dataframe.
+# You cannot "just" add the new (averaged, grouped by year) dataframe to your original dataframe, as the number of rows differ:
+
+# CELL ********************
+
+df_avgs = df.groupby('startYear').mean('averageRating').withColumnRenamed('avg(averageRating)', 'groupMeanRating')
+print(f"Number of rows in movie set: {df.count()}")
+print(f"Number of rows in averaged set: {df_avgs.count()}")
+
+# MARKDOWN ********************
+
+# However, because the `startYear` column has unique values (after all, these are the values we grouped by), we can join it back to the dataframe.
+
+# CELL ********************
+
+display(df_avgs)
+
+# CELL ********************
+
+from pyspark.sql.functions import broadcast
+df_joined = df.join(df_avgs, on='startYear')
+# By default, JOIN will choose an Inner join, and if column names on both sides are equivalent, we don't need to mention them twice:
+display(
+    df_joined
+)
+
+# MARKDOWN ********************
+
+# When joining a big dataset to a small dataset, you can mark the small dataset for broadcast. 
+# 
+# This means a copy of the dataset will be kept on all nodes of the cluster where the large DataFrame resides, so the large DataFrame will remain in place (and is not shuffled across the network).
+# 
+# Please note that you should only broadcast DataFrames that are small enough to fit in memory, otherwise you may run into memory issues.
+# 
+# In our example, this won't help us: the larger side of the join is still a very small dataset (only 5830 rows):
+
+# CELL ********************
+
+# MAGIC %%timeit
+# MAGIC df.join(broadcast(df_avgs), on='startYear')
+
+# CELL ********************
+
+# MAGIC %%timeit
+# MAGIC df.join(df_avgs, on='startYear')
+
+# CELL ********************
+
+display(
+    df_joined
+    .select(['tconst', 'startYear', 'averageRating', 'groupMeanRating'])
+    .filter('startYear > 1960')
+    .limit(5)
+)
 
 # CELL ********************
 
