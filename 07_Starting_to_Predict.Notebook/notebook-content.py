@@ -1,5 +1,21 @@
 # Synapse Analytics notebook source
 
+# METADATA ********************
+
+# META {
+# META   "synapse": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7",
+# META       "default_lakehouse_name": "PySparkLakehouse",
+# META       "default_lakehouse_workspace_id": "e8b3335a-5e83-466c-bd0d-748c45da7cc9",
+# META       "known_lakehouses": [
+# META         {
+# META           "id": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7"
+# META         }
+# META       ]
+# META     }
+# META   }
+# META }
 
 # MARKDOWN ********************
 
@@ -7,21 +23,26 @@
 
 # MARKDOWN ********************
 
-#  Let's try to predict (with some hindsight) who will surve the Titanic disaster<br>We need pandas to do the data wrangling and sci-kit learn to do the modeling and predictions
+#  Let's try to predict (with some hindsight) who will survive the Titanic disaster
+#  
+#  We'll use PySpark to do the data wrangling and sci-kit learn to do the modeling and predictions
 
 # CELL ********************
 
 import numpy as np
-import pandas as pd
 
 import plotly.express as px
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from pyspark.ml.classification import LogisticRegression
+from pyspark.ml.feature import VectorAssembler
+from pyspark.sql.functions import rand, when
+
+from pyspark.ml.evaluation import MultiClassClassificationEvaluator
+evaluator = MultiClassClassificationEvaluator(metricName="accuracy")
 
 # CELL ********************
 
-df = pd.read_csv('https://github.com/wortell-smart-learning/python-data-fundamentals/raw/main/data/titanic.csv')
+df = spark.read.csv('Files/csvresources/titanic.csv')
 
 # CELL ********************
 
@@ -29,7 +50,7 @@ df.info()
 
 # CELL ********************
 
-df.head(2)
+display(df.head(2))
 
 # MARKDOWN ********************
 
@@ -37,7 +58,7 @@ df.head(2)
 
 # CELL ********************
 
-random_predictions = np.random.randint(0, 2, 891)
+df_randompredict = df.withColumn("random_prediction", when(rand() > 0.5, 1).otherwise(0))
 
 # MARKDOWN ********************
 
@@ -45,7 +66,8 @@ random_predictions = np.random.randint(0, 2, 891)
 
 # CELL ********************
 
-accuracy_score(df['survived'], random_predictions)
+evaluator.evaluate(df_randompredict, labelCol="survived", predictionCol="random_prediction")
+
 
 # MARKDOWN ********************
 
@@ -65,7 +87,8 @@ px.bar(
 
 # CELL ********************
 
-accuracy_score(df['survived'].values, np.array([0] * 891))
+df_alwayszero = df.withColumn("alwayszero_prediction", 0)
+evaluator.evaluate(df_randompredict, labelCol="survived", predictionCol="alwayszero_prediction")
 
 # MARKDOWN ********************
 
@@ -84,13 +107,14 @@ px.bar(group_pclass, 'survived', 'perc_of_group', facet_row='pclass')
 
 # CELL ********************
 
-group_sex = df.groupby(['sex', 'survived'], as_index=False)['alive'].count()
-group_sex['perc_of_group'] = group_sex['alive'] / group_sex.groupby(['sex'])['alive'].transform('sum') * 100.
-group_sex
+df_groupby_sex = df.groupby(['sex', 'survived'], as_index=False)['alive'].count()
+df_groupby_sex['perc_of_group'] = df_groupby_sex['alive'] / df_groupby_sex.groupby(['sex'])['alive'].transform('sum') * 100.
+
+display(df_groupby_sex)
 
 # CELL ********************
 
-px.bar(group_sex, 'survived', 'perc_of_group', facet_row='sex')
+px.bar(df_groupby_sex, 'survived', 'perc_of_group', facet_row='sex')
 
 # MARKDOWN ********************
 
@@ -106,9 +130,15 @@ px.bar(group_sex, 'survived', 'perc_of_group', facet_row='sex')
 
 # CELL ********************
 
-df['sex_code'] = pd.get_dummies(df['sex'], drop_first=True)
+from pyspark.ml.feature import StringIndexer, OneHotEncoder
 
-df.head(3)
+indexer = StringIndexer(inputCol="sex", outputCol="sex_index")
+df = indexer.fit(df).transform(df)
+
+encoder = OneHotEncoder(inputCol="sex_index", outputCol="sex_vec")
+df = encoder.fit(df).transform(df)
+
+display(df.head(3))
 
 # MARKDOWN ********************
 
@@ -116,9 +146,22 @@ df.head(3)
 
 # CELL ********************
 
-X = df[['pclass', 'sex_code']]
+# X = df[['pclass', 'sex_code']]
 
-y = df['survived']
+# y = df['survived']
+
+# MARKDOWN ********************
+
+# PySpark's `LogisticRegression` requires the input data to be in a specific format. All features should be assembled in a single column (usually named "features") of vectors. You can use the VectorAssembler to do this:
+
+# CELL ********************
+
+assembler = VectorAssembler(
+    inputCols=['pclass', 'sex_code'],
+    outputCol="survived"
+)
+
+df = assembler.transform(df)
 
 # MARKDOWN ********************
 
@@ -128,7 +171,11 @@ y = df['survived']
 
 logit_model = LogisticRegression()
 
-logit_model.fit(X, y)
+model = logit_model.fit(df)
+
+df_logit_predictions = model.transform(df)
+
+evaluator.evaluate(df_randompredict, labelCol="survived", predictionCol="prediction")
 
 # MARKDOWN ********************
 
@@ -136,4 +183,3 @@ logit_model.fit(X, y)
 
 # CELL ********************
 
-accuracy_score(y, logit_model.predict(X))
