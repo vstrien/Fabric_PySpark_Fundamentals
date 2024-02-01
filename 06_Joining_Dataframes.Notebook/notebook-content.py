@@ -27,8 +27,8 @@
 
 # MARKDOWN ********************
 
-#  In pandas the easiest way to join 2 tables is to use `df.merge()`
-# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.merge.html
+# In Spark the easiest way to join 2 tables is to use `df.join()`
+# https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.join.html
 
 # MARKDOWN ********************
 
@@ -36,7 +36,9 @@
 
 # CELL ********************
 
-import pandas as pd
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName('05_Aggregating_and_summarizing_data').getOrCreate()
 
 movie_data = [
     ['Pulp Fiction', 90],
@@ -44,7 +46,7 @@ movie_data = [
     ['Titanic', 115],
 ]
 
-movies = pd.DataFrame(movie_data, columns=['title', 'runtime'])
+movies = spark.createDataFrame(movie_data, ['title', 'runtime'])
 
 actor_data = [
     ['Pulp Fiction', 'John Travolta'],
@@ -53,15 +55,15 @@ actor_data = [
     ['Terminator', 'Arnold Schwarzenegger'],
 ]
 
-actors = pd.DataFrame(actor_data, columns=['title', 'name'])
+actors = spark.createDataFrame(actor_data, ['title', 'name'])
 
 # CELL ********************
 
-movies
+display(movies)
 
 # CELL ********************
 
-actors
+display(actors)
 
 # MARKDOWN ********************
 
@@ -69,17 +71,8 @@ actors
 
 # CELL ********************
 
-df_inner = movies.merge(actors, how='inner', on='title')
-df_inner
-
-# MARKDOWN ********************
-
-#  FYI: instead of using a dataframe function, you can also use the general pandas function pd.merge()
-
-# CELL ********************
-
-df_inner = pd.merge(movies, actors, how='inner', on='title')
-df_inner
+df_inner = movies.join(actors, how='inner', on='title')
+display(df_inner)
 
 # MARKDOWN ********************
 
@@ -87,8 +80,8 @@ df_inner
 
 # CELL ********************
 
-df_left = movies.merge(actors, how='left', on='title')
-df_left
+df_left = movies.join(actors, how='left', on='title')
+display(df_left)
 
 # MARKDOWN ********************
 
@@ -96,8 +89,83 @@ df_left
 
 # CELL ********************
 
-df_outer = movies.merge(actors, how='outer', on='title')
-df_outer
+df_outer = movies.join(actors, how='outer', on='title')
+display(df_outer)
+
+# MARKDOWN ********************
+
+# ## Joining group aggregates - 'self-joins'
+# 
+# In the previous module, we looked at aggregates. One example that passed was the average movie score per year:
+
+# CELL ********************
+
+df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
+df = df.filter(df['titleType'].isin(['tvSeries', 'movie']))
+
+# MARKDOWN ********************
+
+# Now let's say you want to group averages, but add those group averages to every row of your dataframe.
+# 
+# You cannot "just" add the new (averaged, grouped by year) dataframe to your original dataframe, as the number of rows differ:
+
+# CELL ********************
+
+df_avgs = df.groupby('startYear').mean('averageRating').withColumnRenamed('avg(averageRating)', 'groupMeanRating')
+print(f"Number of rows in movie set: {df.count()}")
+print(f"Number of rows in averaged set: {df_avgs.count()}")
+
+# MARKDOWN ********************
+
+# However, because the `startYear` column has unique values (after all, these are the values we grouped by), we can join it back to the dataframe.
+
+# CELL ********************
+
+display(df_avgs)
+
+# CELL ********************
+
+df_joined = df.join(df_avgs, on='startYear')
+# By default, JOIN will choose an Inner join, and if column names on both sides are equivalent, we don't need to mention them twice:
+display(
+    df_joined
+    .select(['tconst', 'startYear', 'averageRating', 'groupMeanRating'])
+    .filter('startYear > 1960')
+    .limit(5)
+)
+
+# MARKDOWN ********************
+
+# ## Broadcasts
+
+# MARKDOWN ********************
+
+# When joining a big dataset to a small dataset, you can mark the small dataset for broadcast. 
+# 
+# This means a copy of the dataset will be kept on all nodes of the cluster where the large DataFrame resides, so the large DataFrame will remain in place (and is not shuffled across the network).
+# 
+# Please note that you should only broadcast DataFrames that are small enough to fit in memory, otherwise you may run into memory issues.
+
+# CELL ********************
+
+from pyspark.sql.functions import broadcast
+
+# MARKDOWN ********************
+
+# In our example, this won't help us: the larger side of the join is still a very small dataset (only 5830 rows):
+
+# CELL ********************
+
+# MAGIC %%timeit
+# MAGIC spark.catalog.clearCache()
+# MAGIC df.join(df_avgs, on='startYear').count()
+
+
+# CELL ********************
+
+# MAGIC %%timeit
+# MAGIC spark.catalog.clearCache()
+# MAGIC df.join(broadcast(df_avgs), on='startYear').count()
 
 # CELL ********************
 
