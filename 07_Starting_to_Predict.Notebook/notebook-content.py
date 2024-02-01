@@ -29,8 +29,6 @@
 
 # CELL ********************
 
-import numpy as np
-
 import plotly.express as px
 
 from pyspark.ml.classification import LogisticRegression
@@ -39,6 +37,9 @@ from pyspark.sql.functions import rand, when
 
 from pyspark.ml.evaluation import MultiClassClassificationEvaluator
 evaluator = MultiClassClassificationEvaluator(metricName="accuracy")
+
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.appName('07_StartingToPredict').getOrCreate()
 
 # CELL ********************
 
