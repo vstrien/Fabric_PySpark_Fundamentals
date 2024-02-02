@@ -22,23 +22,31 @@
 # # Let's read in and inspect some imdb movies and tv series data
 # 
 # 
-#  If you don't remember what command to use: check the cheat sheet! :)
+# If you don't remember what command to use: check the cheat sheet! :)
 # 
 # 
-#  The dataset is a subset of scraped data from IMDB https://www.imdb.com/ and includes the most voted titles. Only movies with at least 25000 votes are in this dataset.
+# The dataset is a subset of scraped data from IMDB https://www.imdb.com/ and includes the most voted titles. Only movies with at least 25000 votes are in this dataset.
 # 
-#  Let's see if we can find info on the best movies and tv series or just your favorite ones!
+# Let's see if we can find info on the best movies and tv series or just your favorite ones!
 
 # MARKDOWN ********************
 
-#  1) First things first: we first need to import the pandas library. Please import `pandas as pd`.
+# 1. First things first: we first need to get a Spark session. 
+# 
+# Please run the following import and start the session:
+# 
+# ```python
+# from pyspark.sql import SparkSession
+# 
+# spark = SparkSession.builder.appName('01_Exercise').getOrCreate()
+# ```
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-#  2) Read in data from file `https://github.com/wortell-smart-learning/python-data-fundamentals/raw/main/data/most_voted_titles_enriched.csv` and assign it to a variable `df`
+#  2) Read in data from file `Files/csvsources/most_voted_titles_enriched.csv` and assign it to a variable `df`
 
 # CELL ********************
 

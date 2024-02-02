@@ -1,9 +1,25 @@
 # Synapse Analytics notebook source
 
+# METADATA ********************
+
+# META {
+# META   "synapse": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7",
+# META       "default_lakehouse_name": "PySparkLakehouse",
+# META       "default_lakehouse_workspace_id": "e8b3335a-5e83-466c-bd0d-748c45da7cc9",
+# META       "known_lakehouses": [
+# META         {
+# META           "id": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7"
+# META         }
+# META       ]
+# META     }
+# META   }
+# META }
 
 # MARKDOWN ********************
 
-# # Jupyter notebooks + quick Python refresher
+# # PySpark notebooks + quick Python refresher
 
 # MARKDOWN ********************
 
@@ -11,11 +27,12 @@
 
 # MARKDOWN ********************
 
-#  Why use Jupyter Notebooks? They make it very handy to:
-# - Try out code and experiment with it
-# - Combine code with plots of your data
-# - Annotate your code and findings with markdown, just like this text.
-# - You don't need to rerun your script every time, but can choose parts of it: variables are kept in memory
+# Why use a Notebook? They make it very handy to:
+# 
+# * Try out code and experiment with it
+# * Combine code with plots of your data
+# * Annotate your code and findings with markdown, just like this text.
+# * You don't need to rerun your script every time, but can choose parts of it: variables are kept in memory
 
 # MARKDOWN ********************
 
@@ -23,14 +40,14 @@
 
 # MARKDOWN ********************
 
-#  You can run code in Jupyter Notebook by using the shortcut <kbd>Shift</kbd> + <kbd>Enter</kbd> inside the code cell.<br>Let's write a welcome text assign it to a variable and use `print()` to get the output
+#  You can run code in a Notebook by using the shortcut <kbd>Shift</kbd> + <kbd>Enter</kbd> inside the code cell.<br>Let's write a welcome text assign it to a variable and use `print()` to get the output
 
 # CELL ********************
 
 
 # MARKDOWN ********************
 
-#  But Jupyter notebook doesn't need the `print()` statement to print a variable. It will print the string representation of your variable when you just type it and then execute it with `Shift + Enter`. See what happens when you just run the code below:
+#  But a notebook doesn't need the `print()` statement to print a variable. It will print the string representation of your variable when you just type it and then execute it with `Shift + Enter`. See what happens when you just run the code below:
 
 # CELL ********************
 

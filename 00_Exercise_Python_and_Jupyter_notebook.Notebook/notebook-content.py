@@ -1,9 +1,25 @@
 # Synapse Analytics notebook source
 
+# METADATA ********************
+
+# META {
+# META   "synapse": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7",
+# META       "default_lakehouse_name": "PySparkLakehouse",
+# META       "default_lakehouse_workspace_id": "e8b3335a-5e83-466c-bd0d-748c45da7cc9",
+# META       "known_lakehouses": [
+# META         {
+# META           "id": "c95d7b56-9a7f-4b7c-baf4-ea0bdaacbbf7"
+# META         }
+# META       ]
+# META     }
+# META   }
+# META }
 
 # MARKDOWN ********************
 
-# # Python + Jupyter exercises
+# # PySpark exercises
 
 # MARKDOWN ********************
 
@@ -83,8 +99,24 @@
 
 # MARKDOWN ********************
 
-#  9) In the next exercises we are going to read in data with `pd.read_csv()`. Type `import pandas as pd` to import pandas and after that `pd.read_csv()` below and see what happens when you do <kbd>Ctrl</kbd> + <kbd>space</kbd> inside the brackets of `pd.read_csv()`. You can see all the arguments then.
-# If you use Jupyter of Jupyter Lab Google Colab, use here <kbd>Shift</kbd> + <kbd>Tab</kbd> instead of <kbd>Ctrl</kbd> + <kbd>space</kbd> 
+# In the next exercises we are going to read in data with `spark.read.csv()`. 
+# 
+# In order to access the current Spark session, type 
+# 
+# ```python
+# from pyspark.sql import SparkSession
+# 
+# spark = SparkSession.builder.appName('00_Exercise_Python_and_Jupyter_notebook').getOrCreate()
+# ```
+# 
+# Execute the cell.
+
+# CELL ********************
+
+
+# MARKDOWN ********************
+
+# 9. Now, type `spark.read.` below and see what happens when you do <kbd>Ctrl</kbd> + <kbd>space</kbd>.
 
 # CELL ********************
 
