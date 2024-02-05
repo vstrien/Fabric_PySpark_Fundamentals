@@ -45,12 +45,6 @@
 
 # CELL ********************
 
-from pyspark.sql import SparkSession
-import plotly.express as px
-
-spark = SparkSession.builder.appName('05 Exercise').getOrCreate()
-
-df = spark.read.csv('Files/csvsources/owid-covid-data.csv', inferSchema=True, header=True, multiLine=True)
 
 # MARKDOWN ********************
 
@@ -59,13 +53,9 @@ df = spark.read.csv('Files/csvsources/owid-covid-data.csv', inferSchema=True, he
 
 # CELL ********************
 
-df_selected = df.select( ['iso_code', 'continent', 'location', 'date', 'total_vaccinations', 'total_vaccinations_per_hundred', 'population'])
 
 # CELL ********************
 
-display(
-    df_selected
-)
 
 # MARKDOWN ********************
 
@@ -76,13 +66,9 @@ display(
 
 # CELL ********************
 
-df_filtered = df_selected.filter("date > '2020-12-01' and continent = 'Europe'")
 
 # CELL ********************
 
-display(
-    df_filtered
-)
 
 # MARKDOWN ********************
 
@@ -92,7 +78,6 @@ display(
 
 # CELL ********************
 
-df_filtered.printSchema()
 
 # MARKDOWN ********************
 
@@ -100,9 +85,6 @@ df_filtered.printSchema()
 
 # CELL ********************
 
-display(
-    df_filtered.select('location').distinct()
-)
 
 # MARKDOWN ********************
 
@@ -110,13 +92,6 @@ display(
 
 # CELL ********************
 
-display(
-    df_filtered
-    .groupby('location')
-    .max('total_vaccinations')
-    .sort('max(total_vaccinations)', ascending=False)
-    .limit(1)
-)
 
 # MARKDOWN ********************
 
@@ -126,9 +101,6 @@ display(
 
 # CELL ********************
 
-display(
-    df_filtered.groupby('location').sum('total_vaccinations')
-)
 
 # MARKDOWN ********************
 
@@ -136,13 +108,6 @@ display(
 
 # CELL ********************
 
-display(
-    df_filtered
-    .groupby('location')
-    .sum('total_vaccinations')
-    .sort('sum(total_vaccinations)', ascending=False)
-    .limit(5)
-)
 
 # MARKDOWN ********************
 
@@ -150,13 +115,6 @@ display(
 
 # CELL ********************
 
-display(
-    df_filtered
-    .groupby('location')
-    .sum('total_vaccinations_per_hundred')
-    .sort('sum(total_vaccinations_per_hundred)', ascending=False)
-    .limit(5)
-)
 
 # MARKDOWN ********************
 
@@ -164,12 +122,6 @@ display(
 
 # CELL ********************
 
-px.scatter(
-    df_filtered,
-    y='total_vaccinations_per_hundred',
-    x='date',
-    color='location'
-)
 
 # MARKDOWN ********************
 
@@ -181,17 +133,6 @@ px.scatter(
 
 # CELL ********************
 
-px.scatter(
-    df_filtered
-    .where(
-        df_filtered
-        .location
-        .isin(['Netherlands', 'Germany', 'Belgium', 'France', 'Italy', 'Luxembourg', 'United Kingdom'])
-    ).toPandas(),
-    y='total_vaccinations_per_hundred',
-    x='date',
-    color='location'
-)
 
 # MARKDOWN ********************
 
@@ -201,9 +142,3 @@ px.scatter(
 
 # CELL ********************
 
-px.choropleth(
-    df_filtered.toPandas(),
-    locationmode='country names',
-    locations='location',
-    color='total_vaccinations_per_hundred'
-)

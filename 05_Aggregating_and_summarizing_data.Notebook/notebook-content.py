@@ -32,7 +32,7 @@ spark = SparkSession.builder.appName('05_Aggregating_and_summarizing_data').getO
 
 # CELL ********************
 
-df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
+df = spark.read.csv('Files/csvsources/most_voted_titles_enriched.csv', inferSchema=True, header=True)
 df = df.filter(df['titleType'].isin(['tvSeries', 'movie']))
 
 display(
