@@ -55,7 +55,7 @@ spark = SparkSession.builder.appName('01_reading_data_and_inspecting_it').getOrC
 
 # CELL ********************
 
-df = spark.read.csv('Files/titanic.csv', inferSchema=True, header=True)
+df = spark.read.csv('Files/csvsources/titanic.csv', inferSchema=True, header=True)
 
 # MARKDOWN ********************
 
