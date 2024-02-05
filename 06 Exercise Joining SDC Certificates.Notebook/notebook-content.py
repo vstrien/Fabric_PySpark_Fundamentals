@@ -35,19 +35,12 @@
 
 # CELL ********************
 
-from pyspark.sql import SparkSession
-spark = SparkSession.builder.appName('06 Exercise').getOrCreate()
-
-df_cert = spark.read.csv('Files/csvsources/sdc_certificaten.csv', inferSchema=True, header=True, multiLine=True)
-df_ppl = spark.read.csv('Files/csvsources/sdc_personeel.csv', inferSchema=True, header=True, multiLine=True)
 
 # CELL ********************
 
-display(df_cert)
 
 # CELL ********************
 
-display(df_ppl)
 
 # MARKDOWN ********************
 
@@ -55,7 +48,6 @@ display(df_ppl)
 
 # CELL ********************
 
-df_ppl.count()
 
 # MARKDOWN ********************
 
@@ -63,16 +55,6 @@ df_ppl.count()
 
 # CELL ********************
 
-display(
-    df_ppl
-    .where(
-        df_ppl
-        .Voornaam
-        .isin(['Bart', 'Jeroen'])
-    )
-    .groupby('Voornaam')
-    .count()
-)
 
 # MARKDOWN ********************
 
@@ -80,7 +62,6 @@ display(
 
 # CELL ********************
 
-df_cert.select('certificaat').distinct().count()
 
 # MARKDOWN ********************
 
@@ -88,13 +69,6 @@ df_cert.select('certificaat').distinct().count()
 
 # CELL ********************
 
-display(
-    df_cert
-    .groupby('certificaat')
-    .count()
-    .sort('count', ascending=False)
-    .limit(3)
-)
 
 # MARKDOWN ********************
 
@@ -102,9 +76,6 @@ display(
 
 # CELL ********************
 
-display(
-    df_cert.filter('personeel == "LaSo"')
-)
 
 # MARKDOWN ********************
 
@@ -112,9 +83,6 @@ display(
 
 # CELL ********************
 
-df_joined = df_ppl.join(df_cert, df_ppl.personeelcode == df_cert.personeel, 'left')
-
-display(df_joined)
 
 # MARKDOWN ********************
 
@@ -122,10 +90,6 @@ display(df_joined)
 
 # CELL ********************
 
-# The trick here is to find Null values:
-from pyspark.sql.functions import col
-no_match_df = df_joined.filter(col('certificaat').isNull())
-display(no_match_df)
 
 # MARKDOWN ********************
 
@@ -133,17 +97,9 @@ display(no_match_df)
 
 # CELL ********************
 
-display(
-    df_joined
-    .filter(col('certificaat').isNotNull())
-    .groupby('jaar_behaald')
-    .count()
-    .sort('count', ascending=False)
-)
 
 # CELL ********************
 
-import plotly.express as px
 
 # CELL ********************
 

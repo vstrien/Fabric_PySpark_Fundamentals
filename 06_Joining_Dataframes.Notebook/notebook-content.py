@@ -38,7 +38,7 @@
 
 from pyspark.sql import SparkSession
 
-spark = SparkSession.builder.appName('05_Aggregating_and_summarizing_data').getOrCreate()
+spark = SparkSession.builder.appName('06 Joining Dataframes').getOrCreate()
 
 movie_data = [
     ['Pulp Fiction', 90],
