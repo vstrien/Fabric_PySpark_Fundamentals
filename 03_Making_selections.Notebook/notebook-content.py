@@ -38,7 +38,7 @@
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.appName('03_Making_selections').getOrCreate()
-df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
+df = spark.read.csv('Files/csvsources/most_voted_titles_enriched.csv', inferSchema=True, header=True, multiLine=True)
 
 display(
     df.limit(3)

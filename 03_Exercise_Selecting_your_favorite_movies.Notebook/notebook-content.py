@@ -23,12 +23,16 @@
 
 # MARKDOWN ********************
 
-#  1) import pandas, read in the movies dataset and make sure you see all the columns
+# 1) Get a Spark session, read in the movies dataset and make sure the session is loaded correctly (headers, datatypes, multi-lines)
 # 
-# https://github.com/wortell-smart-learning/python-data-fundamentals/raw/main/data/most_voted_titles_enriched.csv
+# `Files/csvsources/most_voted_titles_enriched.csv`
 
 # CELL ********************
 
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName('03_exercise').getOrCreate()
+df = spark.read.csv('Files/csvsources/most_voted_titles_enriched.csv', inferSchema=True, header=True, multiLine=True)
 
 # MARKDOWN ********************
 
@@ -36,6 +40,7 @@
 
 # CELL ********************
 
+df_new = df.select(['titleType', 'originalTitle', 'startYear', 'genres', 'averageRating', 'primary_language', 'country'])
 
 # MARKDOWN ********************
 
@@ -43,6 +48,9 @@
 
 # CELL ********************
 
+display(
+    df.filter('averageRating >= 9.2')
+)
 
 # MARKDOWN ********************
 
@@ -50,13 +58,23 @@
 
 # CELL ********************
 
+display(
+    df.filter('averageRating >= 9.2').sort('startYear', ascending=False)
+)
 
 # MARKDOWN ********************
 
-#  5) Find your favorite movie or tv series in the list. What rating does it get? (use `.str.contains('your_text', case=False)`, see also the cheatsheet)
+# 5. Find your favorite movie or tv series in the list. What rating does it get?
+#  
+# Import functions from pyspark.sql as F, then use `F.col(..).contains(..)`
 
 # CELL ********************
 
+from pyspark.sql import functions as F
+
+display(
+    df.filter(F.col("primaryTitle").contains("Lord of the Rings"))
+)
 
 # MARKDOWN ********************
 
@@ -64,6 +82,9 @@
 
 # CELL ********************
 
+display(
+    df.filter('titleType == "movie" and averageRating > 8.5 and primary_language == "English"')
+)
 
 # MARKDOWN ********************
 
@@ -73,3 +94,6 @@
 
 # CELL ********************
 
+display(
+    df.filter(df.country.isin(['Netherlands', 'Belgium']))
+)
