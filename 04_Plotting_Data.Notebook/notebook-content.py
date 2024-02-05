@@ -39,32 +39,11 @@ import plotly.io as pio
 pio.templates.default = 'plotly_white'
 
 spark = SparkSession.builder.appName('04_Plotting_Data').getOrCreate()
-df = spark.read.csv('Files/most_voted_titles_enriched.csv', inferSchema=True, header=True)
+df = spark.read.csv('Files/csvsources/most_voted_titles_enriched.csv', inferSchema=True, header=True, multiLine = True)
 
 display(
     df.limit(3)
 )
-
-# MARKDOWN ********************
-
-# There is a small issue with this dataset - besides the expected title types 'tvShow' and 'movie' there are some more:
-
-# CELL ********************
-
-display(df[['titleType']].distinct())
-
-# MARKDOWN ********************
-
-# If you like, you could fix this:
-# 
-# 1. find out if the CSV file is coherent in designating columns and quotes
-# 2. if it is, ensure the correct settings of `read.csv`
-# 
-# But for now, let's just ignore these seven wrong rows (note that the movies are still in there, it's just that the row has been cut off). Let's filter out the non 'tvSeries' and 'movie' rows:
-
-# CELL ********************
-
-df = df.filter(df['titleType'].isin(['tvSeries', 'movie']))
 
 # MARKDOWN ********************
 

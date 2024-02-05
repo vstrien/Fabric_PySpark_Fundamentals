@@ -29,10 +29,6 @@
 
 # CELL ********************
 
-from pyspark.sql import SparkSession
-
-spark = SparkSession.builder.appName('03_exercise').getOrCreate()
-df = spark.read.csv('Files/csvsources/most_voted_titles_enriched.csv', inferSchema=True, header=True, multiLine=True)
 
 # MARKDOWN ********************
 
@@ -40,7 +36,6 @@ df = spark.read.csv('Files/csvsources/most_voted_titles_enriched.csv', inferSche
 
 # CELL ********************
 
-df_new = df.select(['titleType', 'originalTitle', 'startYear', 'genres', 'averageRating', 'primary_language', 'country'])
 
 # MARKDOWN ********************
 
@@ -48,9 +43,6 @@ df_new = df.select(['titleType', 'originalTitle', 'startYear', 'genres', 'averag
 
 # CELL ********************
 
-display(
-    df.filter('averageRating >= 9.2')
-)
 
 # MARKDOWN ********************
 
@@ -58,9 +50,6 @@ display(
 
 # CELL ********************
 
-display(
-    df.filter('averageRating >= 9.2').sort('startYear', ascending=False)
-)
 
 # MARKDOWN ********************
 
@@ -70,11 +59,6 @@ display(
 
 # CELL ********************
 
-from pyspark.sql import functions as F
-
-display(
-    df.filter(F.col("primaryTitle").contains("Lord of the Rings"))
-)
 
 # MARKDOWN ********************
 
@@ -82,9 +66,6 @@ display(
 
 # CELL ********************
 
-display(
-    df.filter('titleType == "movie" and averageRating > 8.5 and primary_language == "English"')
-)
 
 # MARKDOWN ********************
 
@@ -94,6 +75,3 @@ display(
 
 # CELL ********************
 
-display(
-    df.filter(df.country.isin(['Netherlands', 'Belgium']))
-)

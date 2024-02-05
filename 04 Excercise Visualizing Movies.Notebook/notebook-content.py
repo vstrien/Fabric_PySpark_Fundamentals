@@ -31,21 +31,6 @@
 
 # CELL ********************
 
-from pyspark.sql import SparkSession
-import seaborn as sns
-
-import plotly.express as px
-
-# some nicer plotly setting
-import plotly.io as pio
-pio.templates.default = 'plotly_white'
-
-spark = SparkSession.builder.appName('04_Plotting_Data').getOrCreate()
-df = spark.read.csv('Files/csvsources/most_voted_titles_enriched.csv', inferSchema=True, header=True, multiLine=True)
-
-display(
-    df.limit(3)
-)
 
 # MARKDOWN ********************
 
@@ -53,7 +38,6 @@ display(
 
 # CELL ********************
 
-df_movies = df.filter('titleType == "movie"')
 
 # MARKDOWN ********************
 
@@ -61,13 +45,9 @@ df_movies = df.filter('titleType == "movie"')
 
 # CELL ********************
 
-df_startyear_count = df_movies.groupBy('startYear').count()
 
 # CELL ********************
 
-display(
-    df_startyear_count
-)
 
 # MARKDOWN ********************
 
@@ -75,12 +55,6 @@ display(
 
 # CELL ********************
 
-px.bar(
-    title='Movies per year',
-    data_frame=df_startyear_count.toPandas(),
-    x='startYear',
-    y='count'
-)
 
 # MARKDOWN ********************
 
@@ -89,14 +63,6 @@ px.bar(
 
 # CELL ********************
 
-px.scatter(
-    title='metascore (critics) vs average rating (viewers)',
-    data_frame=df_movies.toPandas(),
-    x='metascore',
-    y='averageRating',
-    width=1000, # I want to have a square visualization, so the correlation is more clearly visible
-    height=1000
-)
 
 # MARKDOWN ********************
 
@@ -104,16 +70,6 @@ px.scatter(
 
 # CELL ********************
 
-px.scatter(
-    title='metascore (critics) vs average rating (viewers)',
-    data_frame=df_movies.toPandas(),
-    x='metascore',
-    y='averageRating',
-    width=1000, # I want to have a square visualization, so the correlation is more clearly visible
-    height=1000,
-    hover_data=['primaryTitle'],
-    labels={'metascore': 'Critics'' ratings', 'averageRating': 'ordinary viewers'' ratings'}
-)
 
 # MARKDOWN ********************
 
@@ -121,17 +77,6 @@ px.scatter(
 
 # CELL ********************
 
-px.scatter(
-    title='metascore (critics) vs average rating (viewers)',
-    data_frame=df_movies.toPandas(),
-    color='color',
-    x='metascore',
-    y='averageRating',
-    width=1000, # I want to have a square visualization, so the correlation is more clearly visible
-    height=1000,
-    hover_data=['primaryTitle'],
-    labels={'metascore': 'Critics'' ratings', 'averageRating': 'ordinary viewers'' ratings'}
-)
 
 # MARKDOWN ********************
 
@@ -143,31 +88,10 @@ px.scatter(
 
 # CELL ********************
 
-px.scatter(
-    title='metascore (critics) vs average rating (viewers)',
-    data_frame=df_movies.filter(df_movies.country.isin(['Germany', 'USA'])).toPandas(),
-    color='color',
-    x='metascore',
-    y='averageRating',
-    facet_col='country',
-    width=2000,
-    height=1000,
-    hover_data=['primaryTitle'],
-    labels={'metascore': 'Critics'' ratings', 'averageRating': 'ordinary viewers'' ratings'}
-)
 
 # MARKDOWN ********************
 
 #  10) Create a bar plot of the rating of the top 5 highest rated black and white movies
-
-# CELL ********************
-
-px.bar(
-    title='Top 5 highest rated B&W movies',
-    data_frame=df_movies.filter('color == "Black and White"').sort('averageRating', ascending=False).limit(5).toPandas(),
-    x='primaryTitle',
-    y='averageRating'
-)
 
 # CELL ********************
 

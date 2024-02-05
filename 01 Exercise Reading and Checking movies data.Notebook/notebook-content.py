@@ -43,9 +43,6 @@
 
 # CELL ********************
 
-from pyspark.sql import SparkSession
-
-spark = SparkSession.builder.appName('00_Exercise_Python_and_Jupyter_notebook').getOrCreate()
 
 # MARKDOWN ********************
 
@@ -55,7 +52,6 @@ spark = SparkSession.builder.appName('00_Exercise_Python_and_Jupyter_notebook').
 
 # CELL ********************
 
-df = spark.read.csv('Files/csvsources/most_voted_titles_enriched.csv', header=True, inferSchema=True)
 
 # MARKDOWN ********************
 
@@ -63,9 +59,6 @@ df = spark.read.csv('Files/csvsources/most_voted_titles_enriched.csv', header=Tr
 
 # CELL ********************
 
-display(
-    df.head(3)
-)
 
 # MARKDOWN ********************
 
@@ -73,8 +66,6 @@ display(
 
 # CELL ********************
 
-n_col, n_row = (len(df.columns), df.count())
-print(n_col, "x", n_row)
 
 # MARKDOWN ********************
 
@@ -82,7 +73,6 @@ print(n_col, "x", n_row)
 
 # CELL ********************
 
-df.printSchema()
 
 # MARKDOWN ********************
 
@@ -90,7 +80,6 @@ df.printSchema()
 
 # CELL ********************
 
-df.columns
 
 # MARKDOWN ********************
 
@@ -98,11 +87,6 @@ df.columns
 
 # CELL ********************
 
-display(
-    df
-    .groupBy('genre1')
-    .count()
-)
 
 # MARKDOWN ********************
 
@@ -112,11 +96,6 @@ display(
 
 # CELL ********************
 
-display(
-    df
-    .groupBy('endYear')
-    .count()
-)
 
 # MARKDOWN ********************
 
@@ -124,4 +103,3 @@ display(
 
 # CELL ********************
 
-df.

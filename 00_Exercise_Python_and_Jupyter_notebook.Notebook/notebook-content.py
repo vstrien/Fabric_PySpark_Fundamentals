@@ -120,10 +120,3 @@
 
 # CELL ********************
 
-
-# MARKDOWN ********************
-
-#  10) Also try tab completion by only writing `pd.read_` and then pressing <kbd>Ctrl</kbd> + <kbd>space</kbd>.
-
-# CELL ********************
-
