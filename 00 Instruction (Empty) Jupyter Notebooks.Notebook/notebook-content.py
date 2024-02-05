@@ -51,7 +51,6 @@
 
 # CELL ********************
 
-welcome_text
 
 # MARKDOWN ********************
 
@@ -63,7 +62,6 @@ welcome_text
 
 # CELL ********************
 
-print()
 
 # MARKDOWN ********************
 
@@ -71,7 +69,6 @@ print()
 
 # CELL ********************
 
-?print
 
 # MARKDOWN ********************
 
@@ -83,7 +80,6 @@ print()
 
 # CELL ********************
 
-%ls -al
 
 # MARKDOWN ********************
 
@@ -135,10 +131,6 @@ print()
 
 # CELL ********************
 
-my_fruits_list = ['apples', 'banana', 2, 'oranges']
-
-for fruit in my_fruits_list:
-    print(fruit)
 
 # MARKDOWN ********************
 
@@ -146,8 +138,6 @@ for fruit in my_fruits_list:
 
 # CELL ********************
 
-for i in range(0, len(my_fruits_list)):
-    print(my_fruits_list[i])
 
 # MARKDOWN ********************
 
@@ -155,11 +145,6 @@ for i in range(0, len(my_fruits_list)):
 
 # CELL ********************
 
-i = 0
-
-while i < len(my_fruits_list):
-    print(my_fruits_list[i])
-    i += 1 
 
 # MARKDOWN ********************
 
@@ -167,7 +152,6 @@ while i < len(my_fruits_list):
 
 # CELL ********************
 
-my_fruits_list[0:2]
 
 # MARKDOWN ********************
 
@@ -175,7 +159,6 @@ my_fruits_list[0:2]
 
 # CELL ********************
 
-my_fruits_list[-1]
 
 # MARKDOWN ********************
 
@@ -187,13 +170,6 @@ my_fruits_list[-1]
 
 # CELL ********************
 
-my_fruits_dict = {
-    'first': ['apples', 'oranges'],
-    'second': 'banana',
-    'third': 3
-}
-
-my_fruits_dict['second']
 
 # MARKDOWN ********************
 
@@ -205,16 +181,6 @@ my_fruits_dict['second']
 
 # CELL ********************
 
-### Defining a function with def
-
-def add_two_numbers(a, b):
-    """Returns the sum of 2 numbers"""
-    return a + b
-
-number1 = 2
-number2 = 3
-
-add_two_numbers(2, 3)
 
 # MARKDOWN ********************
 

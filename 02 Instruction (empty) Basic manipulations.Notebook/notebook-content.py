@@ -45,7 +45,6 @@ display(df.limit(3))
 
 # CELL ********************
 
-display(df.drop('primaryTitle').limit(3))
 
 # MARKDOWN ********************
 
@@ -53,8 +52,6 @@ display(df.drop('primaryTitle').limit(3))
 
 # CELL ********************
 
-df = df.withColumn('new_metascore', df['metascore'] / 10)
-display(df.where(df.metascore > 10).limit(3))
 
 # MARKDOWN ********************
 
@@ -62,7 +59,6 @@ display(df.where(df.metascore > 10).limit(3))
 
 # CELL ********************
 
-display(df.withColumnRenamed('startYear', 'start_year').limit(3))
 
 # MARKDOWN ********************
 
@@ -70,7 +66,6 @@ display(df.withColumnRenamed('startYear', 'start_year').limit(3))
 
 # CELL ********************
 
-display(df.limit(3))
 
 # MARKDOWN ********************
 
@@ -78,8 +73,6 @@ display(df.limit(3))
 
 # CELL ********************
 
-df = df.withColumnRenamed('startYear', 'start_year')
-display(df.limit(3))
 
 # MARKDOWN ********************
 
@@ -87,7 +80,6 @@ display(df.limit(3))
 
 # CELL ********************
 
-display(df.filter(df.endYear.isNull()).limit(3))
 
 # MARKDOWN ********************
 
@@ -95,8 +87,6 @@ display(df.filter(df.endYear.isNull()).limit(3))
 
 # CELL ********************
 
-df = df.fillna({'endYear': -1})
-display(df.filter(df.tconst == "tt0010323").limit(3))
 
 # MARKDOWN ********************
 
@@ -108,7 +98,6 @@ display(df.filter(df.tconst == "tt0010323").limit(3))
 
 # CELL ********************
 
-display(df.sort('originalTitle'))
 
 # MARKDOWN ********************
 
@@ -116,7 +105,6 @@ display(df.sort('originalTitle'))
 
 # CELL ********************
 
-display(df.sort('originalTitle', ascending=False))
 
 # MARKDOWN ********************
 
@@ -124,4 +112,3 @@ display(df.sort('originalTitle', ascending=False))
 
 # CELL ********************
 
-display(df.sort(['startYear', 'runtimeMinutes'], ascending=[False, True]))
